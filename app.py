@@ -34,8 +34,8 @@ def home():
 @app.route("/set_webhook", methods=["GET"])
 def set_webhook():
     webhook_url = f"https://assem-7duv.onrender.com/{TOKEN}"
-    success = bot.set_webhook(url=webhook_url)
-    return f"Webhook установлено: {success}, URL: {webhook_url}"
+    success = application.bot.set_webhook(url=webhook_url)
+    return f"Webhook установлен: {success}, URL: {webhook_url}"
 
 if __name__ == "__main__":
     app.run()
