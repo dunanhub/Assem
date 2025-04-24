@@ -1,5 +1,5 @@
 from flask import Flask, request
-from telegram import Update, Bot
+from telegram import Update
 from telegram.ext import Application
 from dotenv import load_dotenv
 import os
@@ -19,11 +19,12 @@ application = Application.builder().token(TOKEN).build()
 from LumaMapBot import configure_handlers
 configure_handlers(application)
 
-# Запускаем Application в фоне
+# Запускаем Application и ставим Webhook
 async def run_app():
     await application.initialize()
     await application.start()
-    # Не вызываем .idle() – Flask берёт на себя цикл
+    await application.bot.set_webhook(url=f"https://assem-7duv.onrender.com/{TOKEN}")
+    print("✅ Webhook автоматически установлен!")
 
 asyncio.get_event_loop().create_task(run_app())
 
@@ -39,7 +40,7 @@ def telegram_webhook():
 def home():
     return "✅ LumaMapBot запущен через Render!"
 
-# Установка webhook
+# (опционально) ручная установка webhook
 @app.route("/set_webhook", methods=["GET"])
 def set_webhook():
     async def setup():
