@@ -13,22 +13,26 @@ TOKEN = os.getenv("BOT_TOKEN")
 app = Flask(__name__)
 bot = Bot(token=TOKEN)
 
-# Создаем Telegram-приложение
+# Создание Telegram-приложения
 application = Application.builder().token(TOKEN).build()
 
-# Импортируем функцию настройки бота
+# Импорт и настройка хендлеров
 from LumaMapBot import configure_handlers
 application = configure_handlers(application)
 
-# Webhook для Telegram
+# Webhook обработчик
 @app.route(f"/{TOKEN}", methods=["POST"])
 def telegram_webhook():
-    print("📩 Webhook вызван")
     update = Update.de_json(request.get_json(force=True), bot)
-    asyncio.run(application.process_update(update))  # ✅ обязательно await
+
+    async def process():
+        await application.initialize()
+        await application.process_update(update)
+
+    asyncio.run(process())
     return "ok"
 
-# Корневая страница (проверка)
+# Корневая страница
 @app.route("/", methods=["GET"])
 def home():
     return "✅ Бот работает на Render!"
@@ -37,7 +41,12 @@ def home():
 @app.route("/set_webhook", methods=["GET"])
 def set_webhook():
     webhook_url = f"https://assem-7duv.onrender.com/{TOKEN}"
-    success = asyncio.run(application.bot.set_webhook(url=webhook_url))
+
+    async def set_hook():
+        await application.initialize()
+        return await application.bot.set_webhook(url=webhook_url)
+
+    success = asyncio.run(set_hook())
     return f"Webhook установлен: {success}, URL: {webhook_url}"
 
 if __name__ == "__main__":
