@@ -5,36 +5,29 @@ from dotenv import load_dotenv
 import os
 import asyncio
 
-# Загрузка .env
+# Загрузка токена
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 
-# Flask app
+# Flask-приложение
 app = Flask(__name__)
-
-# Telegram Application
 application = Application.builder().token(TOKEN).build()
 
 # Настройка хендлеров
 from LumaMapBot import configure_handlers
 configure_handlers(application)
 
-async def run_app():
+# Запускаем Telegram-приложение и обновляем webhook
+async def startup():
     await application.initialize()
     await application.start()
+    await application.bot.set_webhook(url=f"https://assem-7duv.onrender.com/{TOKEN}")
+    print("✅ Webhook установлен и приложение запущено")
 
-    async def auto_set_webhook():
-        while True:
-            try:
-                await application.bot.set_webhook(url=f"https://assem-7duv.onrender.com/{TOKEN}")
-                print("🔁 Webhook обновлён")
-            except Exception as e:
-                print(f"⚠️ Ошибка при обновлении webhook: {e}")
-            await asyncio.sleep(5)  # обновлять каждые 5 секунд
-
-    asyncio.create_task(auto_set_webhook())
-
-asyncio.get_event_loop().create_task(run_app())
+# Запускаем стартап задачу
+@app.before_first_request
+def before_first_request():
+    asyncio.get_event_loop().create_task(startup())
 
 # Webhook обработчик
 @app.route(f"/{TOKEN}", methods=["POST"])
@@ -44,18 +37,9 @@ def telegram_webhook():
     return "ok"
 
 # Корневая страница
-@app.route("/", methods=["GET"])
+@app.route("/")
 def home():
-    return "✅ LumaMapBot запущен через Render!"
-
-# (опционально) ручная установка webhook
-@app.route("/set_webhook", methods=["GET"])
-def set_webhook():
-    async def setup():
-        await application.bot.set_webhook(url=f"https://assem-7duv.onrender.com/{TOKEN}")
-        return True
-    success = asyncio.get_event_loop().run_until_complete(setup())
-    return f"Webhook установлен: {success}"
+    return "✅ LumaMapBot работает автоматически!"
 
 if __name__ == "__main__":
     app.run()
