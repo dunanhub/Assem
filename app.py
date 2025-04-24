@@ -31,5 +31,11 @@ def telegram_webhook():
 def home():
     return "✅ Бот работает на Render!"
 
+@app.route("/set_webhook", methods=["GET"])
+def set_webhook():
+    webhook_url = f"https://<твой-домен>.onrender.com/{TOKEN}"
+    success = bot.set_webhook(url=webhook_url)
+    return f"Webhook установлено: {success}, URL: {webhook_url}"
+
 if __name__ == "__main__":
     app.run()
