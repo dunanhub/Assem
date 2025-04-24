@@ -1337,7 +1337,7 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def configure_handlers(application):
-    application = Application.builder().token(TOKEN).build()
+    # application = Application.builder().token(TOKEN).build()
 
     application.add_error_handler(error_handler)
 
