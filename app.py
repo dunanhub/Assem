@@ -23,8 +23,9 @@ application = configure_handlers(application)
 # Webhook для Telegram
 @app.route(f"/{TOKEN}", methods=["POST"])
 def telegram_webhook():
+    print("📩 Webhook вызван")
     update = Update.de_json(request.get_json(force=True), bot)
-    application.process_update(update)
+    asyncio.run(application.process_update(update))  # ✅ обязательно await
     return "ok"
 
 # Корневая страница (проверка)
@@ -32,6 +33,7 @@ def telegram_webhook():
 def home():
     return "✅ Бот работает на Render!"
 
+# Установка webhook
 @app.route("/set_webhook", methods=["GET"])
 def set_webhook():
     webhook_url = f"https://assem-7duv.onrender.com/{TOKEN}"
