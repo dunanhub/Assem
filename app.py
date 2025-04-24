@@ -5,48 +5,52 @@ from dotenv import load_dotenv
 import os
 import asyncio
 
-# Загрузка токена
+# Загружаем токен
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 
-# Flask-приложение
+# Flask приложение
 app = Flask(__name__)
 
-# Telegram-приложение
+# Telegram Application
 application = Application.builder().token(TOKEN).build()
 
-# Хендлеры
+# Импорт хендлеров
 from LumaMapBot import configure_handlers
 configure_handlers(application)
 
-# Асинхронный запуск бота (и webhook)
+# Асинхронный запуск и установка webhook
 async def startup():
     await application.initialize()
     await application.start()
     await application.bot.set_webhook(url=f"https://assem-7duv.onrender.com/{TOKEN}")
     print("✅ Webhook установлен и бот запущен")
 
-# Выполняем startup перед первым запросом
 @app.before_first_request
 def before_first_request():
-    asyncio.run(startup())
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(startup())
 
-# Обработка webhook
+# Webhook обработка
 @app.route(f"/{TOKEN}", methods=["POST"])
 def telegram_webhook():
     update = Update.de_json(request.get_json(force=True), application.bot)
 
-    async def process():
+    async def handle():
         await application.process_update(update)
 
-    # Безопасный вызов из sync контекста
-    return asyncio.run(process())
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(handle())
+
+    return "ok"
 
 # Корневая страница
 @app.route("/")
 def home():
-    return "✅ LumaMapBot запущен на Render!"
+    return "✅ LumaMapBot работает!"
 
-# Запуск
+# Запуск Flask
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
