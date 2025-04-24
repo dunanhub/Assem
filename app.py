@@ -24,10 +24,8 @@ async def startup():
     await application.bot.set_webhook(url=f"https://assem-7duv.onrender.com/{TOKEN}")
     print("✅ Webhook установлен и приложение запущено")
 
-# Запускаем стартап задачу
-@app.before_first_request
-def before_first_request():
-    asyncio.get_event_loop().create_task(startup())
+# Запускаем startup сразу при запуске приложения
+asyncio.get_event_loop().create_task(startup())
 
 # Webhook обработчик
 @app.route(f"/{TOKEN}", methods=["POST"])
