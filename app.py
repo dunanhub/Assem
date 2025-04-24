@@ -3,6 +3,7 @@ from telegram import Update, Bot
 from telegram.ext import Application
 from dotenv import load_dotenv
 import os
+import asyncio
 
 # Загрузка переменных окружения
 load_dotenv()
@@ -34,7 +35,7 @@ def home():
 @app.route("/set_webhook", methods=["GET"])
 def set_webhook():
     webhook_url = f"https://assem-7duv.onrender.com/{TOKEN}"
-    success = application.bot.set_webhook(url=webhook_url)
+    success = asyncio.run(application.bot.set_webhook(url=webhook_url))
     return f"Webhook установлен: {success}, URL: {webhook_url}"
 
 if __name__ == "__main__":
