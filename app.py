@@ -17,7 +17,7 @@ application = Application.builder().token(TOKEN).build()
 
 # Импортируем функцию настройки бота
 from LumaMapBot import configure_handlers
-configure_handlers(application)
+application = configure_handlers(application)
 
 # Webhook для Telegram
 @app.route(f"/{TOKEN}", methods=["POST"])

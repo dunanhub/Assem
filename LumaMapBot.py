@@ -1469,3 +1469,5 @@ def configure_handlers(application):
     application.add_handler(CallbackQueryHandler(prompt_news_image_upload, pattern="^upload_news_image$"))
     application.add_handler(CallbackQueryHandler(start_whatsapp_payment, pattern="^pay_whatsapp$"))
     application.add_handler(CommandHandler("confirm", confirm_payment))
+
+    return application
