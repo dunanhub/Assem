@@ -19,12 +19,20 @@ application = Application.builder().token(TOKEN).build()
 from LumaMapBot import configure_handlers
 configure_handlers(application)
 
-# Запускаем Application и ставим Webhook
 async def run_app():
     await application.initialize()
     await application.start()
-    await application.bot.set_webhook(url=f"https://assem-7duv.onrender.com/{TOKEN}")
-    print("✅ Webhook автоматически установлен!")
+
+    async def auto_set_webhook():
+        while True:
+            try:
+                await application.bot.set_webhook(url=f"https://assem-7duv.onrender.com/{TOKEN}")
+                print("🔁 Webhook обновлён")
+            except Exception as e:
+                print(f"⚠️ Ошибка при обновлении webhook: {e}")
+            await asyncio.sleep(5)  # обновлять каждые 5 секунд
+
+    asyncio.create_task(auto_set_webhook())
 
 asyncio.get_event_loop().create_task(run_app())
 
