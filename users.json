@@ -1,0 +1,39 @@
+{
+    "users": [
+        {
+            "id": 1481995860,
+            "username": "dunanb",
+            "fullname": "Бекзат Убниев",
+            "email": "ubniyev.b@gmail.com",
+            "phone": "+77066160468",
+            "password": "ca3826e705dcb1087be294e06a54f0bc604b01e8679b5b0625b564c0bd7f497a",
+            "is_admin": true,
+            "notifications": false,
+            "points": 0,
+            "tickets_bought": 117
+        },
+        {
+            "id": 847112372,
+            "username": "milesseyaa",
+            "fullname": "Табар Жамиля",
+            "email": "tabarovazhamilya@mail.ru",
+            "phone": "+77059821077",
+            "password": "7e2a09111be7416e7e0430996e2a396ad80ccf734818f9343a44207e03c3ae16",
+            "is_admin": true,
+            "notifications": true,
+            "tickets_bought": 5
+        },
+        {
+            "id": 5784871405,
+            "username": "sweeetieboy",
+            "fullname": "Akesha",
+            "email": "test@test.com",
+            "phone": "+77777777777",
+            "password": "4ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260",
+            "is_admin": false,
+            "notifications": true,
+            "points": 0,
+            "tickets_bought": 100
+        }
+    ]
+}
