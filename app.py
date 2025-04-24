@@ -5,49 +5,48 @@ from dotenv import load_dotenv
 import os
 import asyncio
 
-# Загрузка переменных окружения
+# Загрузка .env
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 
-# Flask приложение
+# Flask app
 app = Flask(__name__)
-bot = Bot(token=TOKEN)
 
-# Создание Telegram-приложения
+# Telegram Application
 application = Application.builder().token(TOKEN).build()
 
-# Импорт и настройка хендлеров
+# Настройка хендлеров
 from LumaMapBot import configure_handlers
-application = configure_handlers(application)
+configure_handlers(application)
+
+# Запускаем Application в фоне
+async def run_app():
+    await application.initialize()
+    await application.start()
+    # Не вызываем .idle() – Flask берёт на себя цикл
+
+asyncio.get_event_loop().create_task(run_app())
 
 # Webhook обработчик
 @app.route(f"/{TOKEN}", methods=["POST"])
 def telegram_webhook():
-    update = Update.de_json(request.get_json(force=True), bot)
-
-    async def process():
-        await application.initialize()
-        await application.process_update(update)
-
-    asyncio.run(process())
+    update = Update.de_json(request.get_json(force=True), application.bot)
+    application.update_queue.put_nowait(update)
     return "ok"
 
 # Корневая страница
 @app.route("/", methods=["GET"])
 def home():
-    return "✅ Бот работает на Render!"
+    return "✅ LumaMapBot запущен через Render!"
 
 # Установка webhook
 @app.route("/set_webhook", methods=["GET"])
 def set_webhook():
-    webhook_url = f"https://assem-7duv.onrender.com/{TOKEN}"
-
-    async def set_hook():
-        await application.initialize()
-        return await application.bot.set_webhook(url=webhook_url)
-
-    success = asyncio.run(set_hook())
-    return f"Webhook установлен: {success}, URL: {webhook_url}"
+    async def setup():
+        await application.bot.set_webhook(url=f"https://assem-7duv.onrender.com/{TOKEN}")
+        return True
+    success = asyncio.get_event_loop().run_until_complete(setup())
+    return f"Webhook установлен: {success}"
 
 if __name__ == "__main__":
     app.run()
